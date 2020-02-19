@@ -12,56 +12,68 @@
   <form id="form">
     <div class="input">
       <label for="A">Коеффициент который зависит от температурной стратификации</label>
-      <input type="text" id="A" placeholder="Enter A">
+      <input type="text" id="A" placeholder="Enter A" value="135">
     </div>
     <div class="input">
       <label for="M">Масса вредного вещества, выбрасываемого в атмосферу за ед времени</label>
-      <input type="text" id="M" placeholder="Enter M">
+      <input type="text" id="M" placeholder="Enter M" value="18">
     </div>
     <div class="input">
       <label for="F">Безразмерный коеффициент, учитывающий скорость оседания вредных веществ в атмосферном воздухе</label>
-      <input type="text" id="F" placeholder="Enter F">
+      <input type="text" id="F" placeholder="Enter F" value="0.5">
     </div>
     <div class="input">
       <label for="u">Скорость ветра</label>
-      <input type="text" id="u" placeholder="Enter u">
+      <input type="text" id="u" placeholder="Enter u" value="3.5">
     </div>
     <div class="input">
       <label for="x">Ось факела выброса на разных расстояниях</label>
-      <input type="text" id="x" placeholder="Enter x">
+      <input type="text" id="x" placeholder="Enter x" value="1000">
     </div>
     <div class="input">
       <label for="H">Высота источника выброса над уровнем земли</label>
-      <input type="text" id="H" placeholder="Enter H">
+      <input type="text" id="H" placeholder="Enter H" value="16">
     </div>
     <div class="input">
       <label for="Tg">Температура газовоздушной смеси</label>
-      <input type="text" id="Tg" placeholder="Enter Tg">
+      <input type="text" id="Tg" placeholder="Enter Tg" value="200">
     </div>
     <div class="input">
       <label for="D">Диаметр устья источника выброса</label>
-      <input type="text" id="D" placeholder="Enter D">
+      <input type="text" id="D" placeholder="Enter D" value="2.1">
     </div>
     <div class="input">
       <label for="V1">Средняя скорость выхода газовоздушной смеси с устья источника выброса</label>
-      <input type="text" id="V1" placeholder="Enter V1">
+      <input type="text" id="V1" placeholder="Enter V1" value="7.5">
     </div>
     <div class="input">
       <label for="nj">Безразмерный коеффициент, что учитывает влияние рельефа местности</label>
-      <input type="text" id="nj" placeholder="Enter η">
+      <input type="text" id="nj" placeholder="Enter η" value="1">
     </div>
     <div class="input">
       <label for="Ta">Температура окружающего атмосферного воздуха</label>
-      <input type="text" id="Ta" placeholder="Enter Ta">
+      <input type="text" id="Ta" placeholder="Enter Ta" value="22">
     </div>
     <div class="input">
       <label for="y">Расстояние по перпендикуляру к оси факела выброса</label>
-      <input type="text" id="y" placeholder="Enter y">
+      <input type="text" id="y" placeholder="Enter y" value="100">
     </div>
     <input type="submit" value="Рассчитать" id="submit">
   </form>
   
+  <div class="results">
+    <div class="result" id="Cm"></div>
+    <div class="result" id="xm"></div>
+    <div class="result" id="um"></div>
+    <div class="result" id="Cmu"></div>
+  </div>
 
+  <div class="results">
+    <div class="result" id="Xmu"></div>
+    <div class="result" id="C"></div>
+    <div class="result" id="Cmx"></div>
+    <div class="result" id="Umx"></div>
+  </div>
   <script src="../src/index.ts"></script>
 </body>
 </html>
