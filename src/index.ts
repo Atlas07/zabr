@@ -1,14 +1,14 @@
 const getElement = (id: string) => document.getElementById(id);
 
 const metricMap = {
-  Cm: 'максимальне значення приземної концентрації шкідливої речовини',
-  xm: 'відстань від джерела викиду',
-  um: 'значення небезпечної швидкості',
-  Cmu: 'максимальне значення приземної концентрації шкідливої речовини при несприятливих метеорологічних умовах і швидкості вітру u',
-  Xmu: 'відстань від джерела викиду, на якому при швидкості вітру u і несприятливих метеорологічних умовах приземна концентрація шкідливих речовин досягає максимального значення',
-  C: 'приземна концентрація шкідливих речовин',
-  Cmx: 'максимальна концентрація',
-  Umx: 'швидкість вітру',
+  Cm: 'Максимальное значение приземой концентрации вредного вещеста',
+  xm: 'Расстояние от источника выброса',
+  um: 'Значение опасной скорости',
+  Cmu: 'Максимальное значение приземной концентрации вредного вещеста, при неблагоприятных метеорологических условиях и скорости ветра u',
+  Xmu: 'Расстояние от источника выброса, на котором при скоросте ветра u и неблагоприятных метеорологических условиях приземная концентрация вредных веществ достигает максимального значения',
+  C: 'Приземная концентрация вредных веществ',
+  Cmx: 'Максимальная концентрация',
+  Umx: 'Скорость ветра',
 };
 
 interface Data {
@@ -18,18 +18,18 @@ interface Data {
 const getValues = (e: MouseEvent): Data => {
   e.preventDefault();
 
-  const A: HTMLInputElement = getElement("A");
-  const M: HTMLInputElement = getElement("M");
-  const F: HTMLInputElement = getElement("F");
-  const u: HTMLInputElement = getElement("u");
-  const x: HTMLInputElement = getElement("x");
-  const H: HTMLInputElement = getElement("H");
-  const Tg: HTMLInputElement = getElement("Tg");
-  const D: HTMLInputElement = getElement("D");
-  const V1: HTMLInputElement = getElement("V1");
-  const nj: HTMLInputElement = getElement("nj");
-  const Ta: HTMLInputElement = getElement("Ta");
-  const y: HTMLInputElement = getElement("y");
+  const A: HTMLInputElement = getElement('A');
+  const M: HTMLInputElement = getElement('M');
+  const F: HTMLInputElement = getElement('F');
+  const u: HTMLInputElement = getElement('u');
+  const x: HTMLInputElement = getElement('x');
+  const H: HTMLInputElement = getElement('H');
+  const Tg: HTMLInputElement = getElement('Tg');
+  const D: HTMLInputElement = getElement('D');
+  const V1: HTMLInputElement = getElement('V1');
+  const nj: HTMLInputElement = getElement('nj');
+  const Ta: HTMLInputElement = getElement('Ta');
+  const y: HTMLInputElement = getElement('y');
 
   return {
     A: +A.value,
