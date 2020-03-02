@@ -1,338 +1,548 @@
 const getElement = (id: string) => document.getElementById(id);
 
-const metricMap = {
-  Cm: 'Максимальное значение приземой концентрации вредного вещеста',
-  xm: 'Расстояние от источника выброса',
-  um: 'Значение опасной скорости',
-  Cmu: 'Максимальное значение приземной концентрации вредного вещеста, при неблагоприятных метеорологических условиях и скорости ветра u',
-  Xmu: 'Расстояние от источника выброса, на котором при скоросте ветра u и неблагоприятных метеорологических условиях приземная концентрация вредных веществ достигает максимального значения',
-  C: 'Приземная концентрация вредных веществ',
-  Cmx: 'Максимальная концентрация',
-  Umx: 'Скорость ветра',
-};
-
-interface Data {
-  [string: string]: number;
-}
-
-const getValues = (e: MouseEvent): Data => {
-  e.preventDefault();
-
-  const A: HTMLInputElement = getElement('A');
-  const M: HTMLInputElement = getElement('M');
-  const F: HTMLInputElement = getElement('F');
-  const u: HTMLInputElement = getElement('u');
-  const x: HTMLInputElement = getElement('x');
-  const H: HTMLInputElement = getElement('H');
-  const Tg: HTMLInputElement = getElement('Tg');
-  const D: HTMLInputElement = getElement('D');
-  const V1: HTMLInputElement = getElement('V1');
-  const nj: HTMLInputElement = getElement('nj');
-  const Ta: HTMLInputElement = getElement('Ta');
-  const y: HTMLInputElement = getElement('y');
-
-  return {
-    A: +A.value,
-    M: +M.value,
-    F: +F.value,
-    u: +u.value,
-    x: +x.value,
-    H: +H.value,
-    Tg: +Tg.value,
-    D: +D.value,
-    V1: +V1.value,
-    nj: +nj.value,
-    Ta: +Ta.value,
-    y: +y.value,
-  };
-};
-
-const calculate = (data: Data) => {
-  let m = 0; // double.Parse(textBox4.Text);
-  let n = 0; // double.Parse(textBox5.Text);
-
-  const detT = data.Tg - data.Ta;
-  const W0 = (4 * data.V1) / (Math.PI * Math.pow(data.D, 2));
-  const i = data.V1 * detT;
-  const kor = Math.pow(i, 1 / 3);
-  const f = 1000 * (((Math.pow(W0, 2) * data.D) / Math.pow(data.H, 2)) * detT);
-  const ii = (data.V1 * detT) / data.H;
-  const kor2 = Math.pow(ii, 1 / 3);
-  const vm = 0.65 * kor2;
-  const vm2 = 1.3 * ((W0 * data.D) / data.H);
-  const fe = 800 * Math.pow(vm2, 3);
-
-  /* eslint-disable */
-  if (f < 100) {
-    m = 1 / (0.67 + 0.1 * Math.pow(f, 1 / 2) + 0.34 * Math.pow(f, 1 / 3));
-    if (vm >= 2) {
-      n = 1;
-    } else {
-      if (0.5 <= vm && vm < 2) {
-        n = 0.532 * Math.pow(vm, 2) - 2.13 * vm + 3.13;
-      } else {
-        if (vm < 0.5) {
-          n = 4.4 * vm;
-        }
-      }
-    }
-  } else {
-    if (f >= 100 || (detT < 5 && detT >= 0)) {
-      m = 1.47 / Math.pow(f, 1 / 3);
-      n = m;
-    }
-  }
-  let Cm = 0;
-  Cm = (data.A * data.M * data.F * m * n * data.nj) / (data.H ** 2 * kor);
-  if (f >= 100 && vm2 >= 0.5) {
-    if (vm2 >= 2) {
-      n = 1;
-    } else {
-      if (0.5 <= vm2 && vm2 < 2) {
-        n = 0.532 * Math.pow(vm2, 2) - 2.13 * vm2 + 3.13;
-      } else {
-        if (vm2 < 0.5) {
-          n = 4.4 * vm2;
-        }
-      }
-    }
-    Cm =
-      ((data.A * data.M * data.F * n * data.nj) / Math.pow(data.H, 4 / 3)) *
-      ((data.D / 8) * data.V1);
-  }
-
-  if ((f < 100 && vm < 0.5) || (f >= 100 && vm2 < 0.5)) {
-    let m2 = 0;
-    if (f < 100 && vm < 0.5) {
-      m2 = 2.86 * m;
-    } else {
-      if (f >= 100 && vm2 < 0.5) {
-        m2 = 0.9;
-      }
-    }
-    Cm = (data.A * data.M * data.F * m2 * data.nj) / Math.pow(data.H, 7 / 3);
-  }
-
-  let xm = 0;
-  let d = 0;
-  if (vm <= 0.5) {
-    d = 2.48 * (1 + 0.28 * Math.pow(fe, 1 / 3));
-  } else {
-    if (0.5 < vm && vm <= 2) {
-      d = 4.95 * vm * (1 + 0.28 * Math.pow(f, 1 / 3));
-    } else {
-      if (vm > 2) {
-        d = 7 * Math.pow(vm, 1 / 2) * (1 + 0.28 * Math.pow(f, 1 / 3));
-      }
-    }
-  }
-  if (f > 100) {
-    if (vm2 <= 0.5) {
-      d = 5.7;
-    } else {
-      if (0.5 < vm2 && vm2 <= 2) {
-        d = 11.4 * vm2;
-      } else {
-        if (vm2 > 2) {
-          d = 16 * vm2;
-        }
-      }
-    }
-  }
-  xm = ((5 - data.F) / 4) * d * data.H;
-
-  let um = 0; //небезпечна швидкість вітру
-  if (f < 100) {
-    if (vm <= 0.5) {
-      um = 0.5;
-    } else {
-      if (0.5 < vm && vm <= 2) {
-        um = vm;
-      } else {
-        if (vm > 2) {
-          um = vm * (1 + 0.12 * Math.pow(f, 1 / 2));
-        }
-      }
-    }
-  } else {
-    if (f > 100) {
-      if (vm2 <= 0.5) {
-        um = 0.5;
-      } else {
-        if (0.5 < vm2 && vm2 <= 2) {
-          um = vm2;
-        } else {
-          if (vm2 > 2) {
-            um = vm2 * 2.2;
-          }
-        }
-      }
-    }
-  }
-
-  let Cmu = 0;
-  let U = data.u / um;
-  let r = 0;
-  if (U <= 1) {
-    r = 0.67 * U + 1.67 * Math.pow(U, 2) - 1.34 * Math.pow(U, 3);
-  } else {
-    if (U > 1) {
-      r = (3 * U) / (2 * Math.pow(U, 2) - U + 2);
-    }
-  }
-  Cmu = r * Cm;
-
-  let Xmu = 0;
+const P = (atmosphereValue, city) => {
   let p = 0;
-  if (U <= 0.25) {
-    p = 3;
+  if (city) {
+    if (atmosphereValue == "A") {
+      p = 0.07;
+    }
+    if (atmosphereValue == "B") {
+      p = 0.07;
+    }
+    if (atmosphereValue == "C") {
+      p = 0.1;
+    }
+    if (atmosphereValue == "D") {
+      p = 0.15;
+    }
+    if (atmosphereValue == "E") {
+      p = 0.35;
+    }
+    if (atmosphereValue == "F") {
+      p = 0.55;
+    }
   } else {
-    if (0.25 < U && U <= 1) {
-      p = 8.43 * Math.pow(1 - U, 3) + 1;
-    } else {
-      if (U > 1) {
-        p = 0.32 * U + 0.68;
-      }
+    if (atmosphereValue == "A") {
+      p = 0.15;
+    }
+    if (atmosphereValue == "B") {
+      p = 0.15;
+    }
+    if (atmosphereValue == "C") {
+      p = 0.2;
+    }
+    if (atmosphereValue == "D") {
+      p = 0.25;
+    }
+    if (atmosphereValue == "E") {
+      p = 0.3;
+    }
+    if (atmosphereValue == "F") {
+      p = 0.3;
     }
   }
-  Xmu = p * xm;
-
-  let C = 0;
-  let s1 = 0;
-  let X = data.x / xm;
-  if (X <= 1) {
-    s1 = 3 * Math.pow(X, 4) - 8 * Math.pow(X, 3) + 6 * Math.pow(X, 2);
-  } else {
-    if (1 <= X && X <= 8) {
-      s1 = 1.13 / (0.13 * Math.pow(X, 2) + 1);
-    } else {
-      if (data.F <= 1.5 && X > 8) {
-        s1 = X / (3.58 * Math.pow(X, 2) - 2.47 * X + 120);
-      } else {
-        if (data.F > 1.5 && X > 8) {
-          s1 = 1 / (0.1 * Math.pow(U, 2) + 2.47 * X - 17.8);
-        }
-      }
-    }
-  }
-  C = s1 * Cm;
-
-  let ty = 0;
-  let s2 = 0;
-  if (data.u <= 5) {
-    ty = (data.u * Math.pow(data.y, 2)) / Math.pow(data.x, 2);
-  } else {
-    if (data.u > 5) {
-      ty = (5 * Math.pow(data.y, 2)) / Math.pow(data.x, 2);
-    }
-  }
-  s2 =
-    1 /
-    Math.pow(
-      1 + 5 * ty + 12.8 * Math.pow(ty, 2) + 17 * Math.pow(ty, 3) + 45.1 * Math.pow(ty, 4),
-      2,
-    );
-  let y3 = s2 * C;
-
-  let Cmx = 0;
-  let s11 = 0;
-  if (X <= 1) {
-    s11 = 3 * Math.pow(X, 4) - 8 * Math.pow(X, 3) + 6 * Math.pow(X, 2);
-  } else {
-    if (1 < X && X <= 8) {
-      s11 = 1.1 / (0.1 * Math.pow(X, 2) + 1);
-    } else {
-      if (8 < X && X <= 24) {
-        s11 = 2.55 / (0.13 * Math.pow(X, 2) + 1);
-      } else {
-        if (24 < X && X < 80 && data.F <= 1.5) {
-          s11 = X / (4.75 * Math.pow(X, 2) - 140 * X + 1435);
-        } else {
-          if (24 < X && X < 80 && data.F > 1.5) {
-            s11 = 2.26 / (0.1 * Math.pow(X, 2) + 7.41 * X - 160);
-          } else {
-            if (X > 80 && data.F <= 1.5) {
-              s11 = X / (3.58 * Math.pow(X, 2) - 35.2 * X + 120);
-            } else {
-              if (X > 80 && data.F > 1.5) {
-                s11 = 1 / (0.1 * Math.pow(X, 2) + 2.47 * X - 178);
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  Cmx = s11 * Cm;
-
-  let Umx = 0;
-  let f1 = 0;
-  if (X <= 1) {
-    f1 = 1;
-  } else {
-    if (1 < X && X <= 8) {
-      f1 = (0.75 + 0.25 * X) / 1 + Math.pow(data.x / (9 * xm), 3);
-    } else {
-      if (8 < X && X < 80) {
-        f1 = 0.25;
-      } else {
-        if (X >= 80) {
-          f1 = 1;
-        }
-      }
-    }
-  }
-  Umx = f1 * um;
-
-  let newM = 0; //потужність викиду
-  if (f >= 100) {
-    newM =
-      ((Cm * Math.pow(data.H, 4 / 3)) / data.A) * data.F * n * data.nj * ((8 * data.V1) / data.D);
-  } else {
-    newM = ((Cm * Math.pow(data.H, 2)) / (data.A * data.F * m * n * data.nj)) * kor;
-  }
-
-  const newH = Math.pow((data.A * newM * data.F * data.nj) / (Cm * kor), 1 / 2);
-  /* eslint-enable */
-
-  console.log({
-    Cm,
-    xm,
-    um,
-    Cmu,
-    Xmu,
-    C,
-    Cmx,
-    Umx,
-  });
-
-  return {
-    Cm,
-    xm,
-    um,
-    Cmu,
-    Xmu,
-    C,
-    Cmx,
-    Umx,
-  };
+  console.log("P", p);
+  return p;
 };
 
-const showResult = (key: string, value: number) => {
-  const element = getElement(key);
+const Uss = (Hs, Zref, Uref, atmosphereValue, city) => {
+  const p = P(atmosphereValue, city);
+  const r = Hs / Zref;
+  const Us = Uref * Math.pow(r, p);
 
-  element.innerHTML = `${key}: ${value} \n ${metricMap[key]}`;
+  return Us;
+};
+
+const F = (g, vs, ds, Ts, Ta) => {
+  return g * vs * ds * ds * ((Ts - Ta) / (4 * Ts));
+};
+
+const koefA = (X, atmosphereValue) => {
+  const A = 0;
+  if (atmosphereValue == "A") {
+    if (X < 100) {
+      A = 122.8;
+    }
+    if (X >= 100 && X < 160) {
+      A = 158.08;
+    }
+    if (X >= 160 && X < 210) {
+      A = 170.22;
+    }
+    if (X >= 210 && X < 260) {
+      A = 179.52;
+    }
+    if (X >= 260 && X < 310) {
+      A = 217.41;
+    }
+    if (X >= 310 && X < 410) {
+      A = 258.89;
+    }
+    if (X >= 410 && X < 510) {
+      A = 346.75;
+    }
+    if (X >= 510 && X < 3110) {
+      A = 453.85;
+    }
+    if (X >= 3110) {
+      A = 0;
+    }
+  }
+
+  if (atmosphereValue == "B") {
+    if (X < 210) {
+      A = 90.673;
+    }
+    if (X >= 210 && X <= 400) {
+      A = 98.483;
+    }
+    if (X > 400) {
+      A = 109.3;
+    }
+  }
+
+  if (atmosphereValue == "C") {
+    A = 61.141;
+  }
+
+  if (atmosphereValue == "D") {
+    if (X < 310) {
+      A = 34.459;
+    }
+    if (X >= 310 && X < 1010) {
+      A = 32.093;
+    }
+    if (X >= 1010 && X < 3010) {
+      A = 32.093;
+    }
+    if (X >= 3010 && X < 10010) {
+      A = 33.504;
+    }
+    if (X >= 10010 && X < 30000) {
+      A = 36.65;
+    }
+    if (X >= 30000) {
+      A = 44.053;
+    }
+  }
+
+  if (atmosphereValue == "E") {
+    if (X < 100) {
+      A = 24.26;
+    }
+    if (X >= 100 && X < 310) {
+      A = 23.331;
+    }
+    if (X >= 310 && X < 1010) {
+      A = 21.628;
+    }
+    if (X >= 1010 && X < 2010) {
+      A = 21.628;
+    }
+    if (X >= 2010 && X < 4010) {
+      A = 22.534;
+    }
+    if (X >= 4010 && X < 10010) {
+      A = 24.703;
+    }
+    if (X >= 10010 && X < 20010) {
+      A = 26.97;
+    }
+    if (X >= 20010 && X < 40000) {
+      A = 35.42;
+    }
+    if (X >= 40000) {
+      A = 47.618;
+    }
+  }
+
+  if (atmosphereValue == "F") {
+    if (X < 210) {
+      A = 15.209;
+    }
+    if (X >= 210 && X < 710) {
+      A = 14.457;
+    }
+    if (X >= 710 && X < 1010) {
+      A = 13.953;
+    }
+    if (X >= 1010 && X < 2010) {
+      A = 13.953;
+    }
+    if (X >= 2010 && X < 3010) {
+      A = 14.823;
+    }
+    if (X >= 3010 && X < 7010) {
+      A = 16.187;
+    }
+    if (X >= 7010 && X < 15010) {
+      A = 17.836;
+    }
+    if (X >= 15010 && X < 30010) {
+      A = 22.651;
+    }
+    if (X >= 30010 && X < 60000) {
+      A = 27.074;
+    }
+    if (X >= 60000) {
+      A = 34.219;
+    }
+  }
+  console.log("A", A);
+  return A;
+};
+
+const koefB = (X, atmosphereValue) => {
+  let B = 0;
+  if (atmosphereValue == "A") {
+    if (X < 100) {
+      B = 0.9447;
+    }
+    if (X >= 100 && X < 160) {
+      B = 1.0542;
+    }
+    if (X >= 160 && X < 210) {
+      B = 1.0932;
+    }
+    if (X >= 210 && X < 260) {
+      B = 1.1262;
+    }
+    if (X >= 260 && X < 310) {
+      B = 1.2644;
+    }
+    if (X >= 310 && X < 410) {
+      B = 1.4094;
+    }
+    if (X >= 410 && X < 510) {
+      B = 1.7283;
+    }
+    if (X >= 510 && X < 3110) {
+      B = 2.1166;
+    }
+    if (X >= 3110) {
+      B = 0;
+    }
+  }
+
+  if (atmosphereValue == "B") {
+    if (X < 210) {
+      B = 0.93198;
+    }
+    if (X >= 210 && X <= 400) {
+      B = 0.98332;
+    }
+    if (X > 400) {
+      B = 1.0971;
+    }
+  }
+
+  if (atmosphereValue == "C") {
+    B = 0.91465;
+  }
+
+  if (atmosphereValue == "D") {
+    if (X < 310) {
+      B = 0.86974;
+    }
+    if (X >= 310 && X < 1010) {
+      B = 0.81066;
+    }
+    if (X >= 1010 && X < 3010) {
+      B = 0.64403;
+    }
+    if (X >= 3010 && X < 10010) {
+      B = 0.60486;
+    }
+    if (X >= 10010 && X < 30000) {
+      B = 0.56589;
+    }
+    if (X >= 30000) {
+      B = 0.51179;
+    }
+  }
+
+  if (atmosphereValue == "E") {
+    if (X < 100) {
+      B = 0.8366;
+    }
+    if (X >= 100 && X < 310) {
+      B = 0.81956;
+    }
+    if (X >= 310 && X < 1010) {
+      B = 0.7566;
+    }
+    if (X >= 1010 && X < 2010) {
+      B = 0.63077;
+    }
+    if (X >= 2010 && X < 4010) {
+      B = 0.57154;
+    }
+    if (X >= 4010 && X < 10010) {
+      B = 0.50527;
+    }
+    if (X >= 10010 && X < 20010) {
+      B = 0.46713;
+    }
+    if (X >= 20010 && X < 40000) {
+      B = 0.37615;
+    }
+    if (X >= 40000) {
+      B = 0.29592;
+    }
+  }
+
+  if (atmosphereValue == "F") {
+    if (X < 210) {
+      B = 0.81558;
+    }
+    if (X >= 210 && X < 710) {
+      B = 0.78407;
+    }
+    if (X >= 710 && X < 1010) {
+      B = 0.68465;
+    }
+    if (X >= 1010 && X < 2010) {
+      B = 0.63227;
+    }
+    if (X >= 2010 && X < 3010) {
+      B = 0.54503;
+    }
+    if (X >= 3010 && X < 7010) {
+      B = 0.4649;
+    }
+    if (X >= 7010 && X < 15010) {
+      B = 0.41507;
+    }
+    if (X >= 15010 && X < 30010) {
+      B = 0.32681;
+    }
+    if (X >= 30010 && X < 60000) {
+      B = 0.27436;
+    }
+    if (X >= 60000) {
+      B = 0.21716;
+    }
+  }
+  console.log("B", B);
+  return B;
+};
+
+const koefC = atmosphereValue => {
+  let C = 0;
+
+  if (atmosphereValue == "A") {
+    C = 24.167;
+  }
+  if (atmosphereValue == "B") {
+    C = 18.333;
+  }
+  if (atmosphereValue == "C") {
+    C = 12.5;
+  }
+  if (atmosphereValue == "D") {
+    C = 8.333;
+  }
+  if (atmosphereValue == "E") {
+    C = 6.25;
+  }
+  if (atmosphereValue == "F") {
+    C = 4.1667;
+  }
+  console.log("C", C);
+  return C;
+};
+
+const koefD = atmosphereValue => {
+  let D = 0;
+
+  if (atmosphereValue == "A") {
+    D = 2.5334;
+  }
+  if (atmosphereValue == "B") {
+    D = 1.8096;
+  }
+  if (atmosphereValue == "C") {
+    D = 1.0857;
+  }
+  if (atmosphereValue == "D") {
+    D = 0.72382;
+  }
+  if (atmosphereValue == "E") {
+    D = 0.54287;
+  }
+  if (atmosphereValue == "F") {
+    D = 0.36191;
+  }
+  console.log("D", D);
+  return D;
+};
+
+const Sy = (X, atmosphereValue) => {
+  let Sy = 0;
+
+  const C = koefC(atmosphereValue);
+  const D = koefD(atmosphereValue);
+
+  Sy = 456.11628 * X * Math.tan(0.01745329 * (C - D * Math.log(X)));
+
+  return Sy;
+};
+
+const Sz = (X, atmosphereValue) => {
+  let Sz = 0;
+
+  const A = koefA(X, atmosphereValue);
+  const B = koefB(X, atmosphereValue);
+
+  Sz = A * Math.pow(X, B);
+
+  return Sz;
 };
 
 window.onload = () => {
-  const submit = <HTMLInputElement>document.getElementById('submit');
+  const submit = getElement("submit");
+  const result = getElement("result");
 
-  submit.onclick = (e: MouseEvent) => {
-    const data: Data = getValues(e);
-    const results = calculate(data);
+  submit.onclick = (e: any) => {
+    e.preventDefault();
 
-    Object
-      .entries(results)
-      .forEach(([key, value]) => showResult(key, value));
+    const Q = +getElement("Q").value;
+    const Hs = +getElement("Hs").value;
+    const ds = +getElement("ds").value;
+    const vs = +getElement("vs").value;
+    const Ts = +getElement("Ts").value;
+    const Uref = +getElement("Uref").value;
+    const Zref = +getElement("Zref").value;
+    const Ta = +getElement("Ta").value;
+    const X = +getElement("X").value;
+    const y = +getElement("y").value;
+    const z = +getElement("z").value;
+
+    const city = getElement("city").checked;
+    const village = getElement("village").checked;
+
+    const atmosphere = getElement("atmosphere");
+    const atmosphereValue = atmosphere.options;
+
+    const e = document.getElementById("atmosphere");
+    const atmosphereValue = "A" || e.options[e.selectedIndex].value;
+    // const atmosphereText = e.options[e.selectedIndex].text;
+
+    console.log({
+      Q,
+      Hs,
+      ds,
+      vs,
+      Ts,
+      Uref,
+      Zref,
+      Ta,
+      X,
+      y,
+      z,
+      city,
+      village,
+      atmosphereValue,
+    });
+
+    let Us = Uss(Hs, Zref, Uref, atmosphereValue, city);
+    let Hs_;
+    const g = 9.8;
+
+    if (vs < 1.5 * Us) {
+      Hs_ = Hs - 2 * ds * (vs / Us - 1.5);
+      console.log("Hs_", Hs_);
+    } else {
+      Hs_ = Hs;
+      console.log("Hs_", Hs_);
+    }
+
+    let Xf;
+    let Fb = F(g, vs, ds, Ts, Ta);
+
+    if (Fb < 55) {
+      Xf = 49 * Math.pow(Fb, 5 / 8);
+      console.log("Xf", Xf);
+    } else {
+      Xf = 119 * Math.pow(Fb, 2 / 5);
+      console.log("Xf", Xf);
+    }
+
+    let He;
+
+    if (
+      atmosphereValue == "A" ||
+      atmosphereValue == "B" ||
+      atmosphereValue == "C" ||
+      atmosphereValue == "D"
+    ) {
+      if (X < Xf) {
+        He = Hs_ + 1.6 * ((Math.pow(Fb, 1 / 3) * Math.pow(Xf, 1 / 3)) / Us);
+      } else {
+        He = Hs_ + 1.6 * ((Math.pow(Fb, 1 / 3) * Math.pow(X, 1 / 3)) / Us);
+      }
+      console.log("He", He);
+    } else {
+      let sigma = 0;
+      if (atmosphereValue == "E") {
+        sigma = 0.02;
+      }
+
+      if (atmosphereValue == "F") {
+        sigma = 0.035;
+      }
+
+      let s = (g * sigma) / Ta;
+
+      if (1.84 * Us * Math.pow(s, -1 / 2) >= Xf) {
+        if (X < Xf) {
+          He = Hs_ + 1.6 * ((Math.pow(Fb, 1 / 3) * Math.pow(Xf, 1 / 3)) / Us);
+        } else {
+          He = Hs_ + 1.6 * ((Math.pow(Fb, 1 / 3) * Math.pow(X, 1 / 3)) / Us);
+        }
+        //He = Hs_ + 1.6 * (Math.Pow(Fb, 1 / 3f) * Math.Pow(Xf, 1 / 3f) / Us);
+      } else {
+        He = Hs_ + 2.4 * (Fb / (Us * s));
+      }
+      console.log("He", He);
+    }
+
+    let V = 0;
+    //double H1 = (z - (2 * m * L - He));
+    let L = 320 * 10;
+    let Szz = Sz(X, atmosphereValue);
+
+    let sum = 0;
+    if (
+      atmosphereValue == "A" ||
+      atmosphereValue == "B" ||
+      atmosphereValue == "C" ||
+      atmosphereValue == "D"
+    ) {
+      for (let m = 1; m <= 3; m++) {
+        sum =
+          sum +
+          Math.exp((-0.5 * Math.pow(z - (2 * m * L - He), 2)) / Math.pow(Szz, 2)) +
+          Math.exp((-0.5 * Math.pow(z + (2 * m * L - He), 2)) / Math.pow(Szz, 2)) +
+          Math.exp((-0.5 * Math.pow(z - (2 * m * L + He), 2)) / Math.pow(Szz, 2)) +
+          Math.exp((-0.5 * Math.pow(z + (2 * m * L + He), 2)) / Math.pow(Szz, 2));
+      }
+    }
+    console.log("sum", sum);
+
+    V =
+      Math.exp((-0.5 * Math.pow(z - He, 2)) / Math.pow(Szz, 2)) +
+      Math.exp((-0.5 * Math.pow(z + He, 2)) / Math.pow(Szz, 2)) +
+      sum;
+    console.log("V", V);
+
+    const K = 1000000; // коэф.
+    let Syy = Sy(X, atmosphereValue);
+
+    let C =
+      ((Q * K * V) / (2 * Math.PI * Us * Syy * Szz)) *
+      Math.exp(-0.5 * (Math.pow(y, 2) / Math.pow(Syy, 2))); //
+    console.log("C", C * 10000);
+    result.value = C * 10000;
   };
 };
