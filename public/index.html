@@ -6,78 +6,69 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
   <link rel="stylesheet" href="style.css">
-  <title>Lab2</title>
+  <title>Lab4</title>
 </head>
 <body>
+  <h2>Моделювання конвективного масоперенесення вздовж лінії течії</h2>
   <form id="form">
     <div class="input">
-      <label for="Q">Мощность выброса</label>
-      <input type="text" id="Q" placeholder="Мощность выброса" value="19">
+      <label for="m">Потужність водонасосного горизонту</label>
+      <input type="text" id="m" placeholder="" value="14">
     </div>
     <div class="input">
-      <label for="Hs">Высота источника выброса</label>
-      <input type="text" id="Hs" placeholder="Высота источника выброса" value="20">
+      <label for="Q">Дебіт свердловини</label>
+      <input type="text" id="Q" placeholder="" value="92">
     </div>
     <div class="input">
-      <label for="ds">Диаметр источника выброса</label>
-      <input type="text" id="ds" placeholder="Диаметр источника выброса" value="0.8">
+      <label for="n">Активна поростість</label>
+      <input type="text" id="n" placeholder="" value="0.28">
     </div>
     <div class="input">
-      <label for="vs">Скорость газа в устье источника</label>
-      <input type="text" id="vs" placeholder="Enter vs" value="7.5">
+      <label for="С0">Генералізація прісних вод</label>
+      <input type="text" id="C0" placeholder="" value="0.3">
     </div>
     <div class="input">
-      <label for="Ts">Температура газов</label>
-      <input type="text" id="Ts" placeholder="Enter Ts" value="90">
+      <label for="Ccer">Мінералізація розчинів у воді</label>
+      <input type="text" id="Ccer" placeholder="" value="10.3">
     </div>
     <div class="input">
-      <label for="Uref">Средняя скорость ветра</label>
-      <input type="text" id="Uref" placeholder="Enter Uref" value="6">
-    </div>
-    <div class="input">
-      <label for="Zref">На высоте * (* - по умолчанию, высота 10м)</label>
-      <input type="text" id="Zref" placeholder="Enter Zref" value="10">
-    </div>
-    <div class="input">
-      <label for="Ta">Температура окружающей среды</label>
-      <input type="text" id="Ta" placeholder="Enter Ta" value="25">
-    </div>
-    <div class="input">
-      <label for="X">Расстояние до проекции точки на ось факела</label>
-      <input type="text" id="X" placeholder="Enter X" value="1">
-    </div>
-    <div class="input">
-      <label for="y">Расстояние по перпендикуляру до оси факела</label>
-      <input type="text" id="y" placeholder="Enter y" value="1">
-    </div>
-    <div class="input">
-      <label for="z">Высоат точки</label>
-      <input type="text" id="z" placeholder="Enter z" value="1">
-    </div>
-    <div class="input">
-      <label>Тип местности</label>
-      <p><input id="city" name="type" type="radio" value="city" checked> Городсткой</p>
-      <p><input id="village" name="type" type="radio" value="village"> Сельской</p>
-    </div>
-    <div class="input">
-      <label>Стабильность атмосферы</label>
-      <select id="atmosphere">
-        <option value="A">A</option>
-        <option value="B">B</option>
-        <option value="C">C</option>
-        <option value="D">D</option>
-        <option value="E">E</option>
-        <option value="F">F</option>
-      </select>
+      <label for="ne">Ефективна поростість</label>
+      <input type="text" id="ne" placeholder="" value="1">
     </div>
 
-    <input type="submit" value="Рассчитать" id="submit">
-
+    <h2>Джерело 1</h2>
     <div class="input">
-      <label for="result">Концентрация в точке с координатами x,y,z</label>
-      <input type="text" id="result" placeholder="" value="">
+      <label for="x11">X1</label>
+      <input type="text" id="x11" placeholder="" value="150">
     </div>
+    <div class="input">
+      <label for="y11">Y1</label>
+      <input type="text" id="y11" placeholder="" value="130">
+    </div>
+    <div class="input">
+      <label for="y21">Y2</label>
+      <input type="text" id="y21" placeholder="" value="170">
+    </div>
+
+    <h2>Джерело 2</h2>
+    <div class="input">
+      <label for="x12">X1</label>
+      <input type="text" id="x12" placeholder="" value="150">
+    </div>
+    <div class="input">
+      <label for="y12">Y1</label>
+      <input type="text" id="y12" placeholder="" value="-20">
+    </div>
+    <div class="input">
+      <label for="y22">Y2</label>
+      <input type="text" id="y22" placeholder="" value="20">
+    </div>
+
+    <input type="submit" value="Розрахувати" id="submit">
   </form>
+
+  <h2>Розрахунки</h2>
+  <p id="result"></p>
   <script src="../src/index.ts"></script>
 </body>
 </html>
