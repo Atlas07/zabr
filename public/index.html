@@ -12,56 +12,44 @@
   <h2>Моделювання конвективного масоперенесення вздовж лінії течії</h2>
   <form id="form">
     <div class="input">
-      <label for="m">Потужність водонасосного горизонту</label>
-      <input type="text" id="m" placeholder="" value="14">
+      <label for="V">Швидкість природного потоку підземних вод</label>
+      <input type="text" id="V" placeholder="" value="0.04">
     </div>
     <div class="input">
-      <label for="Q">Дебіт свердловини</label>
-      <input type="text" id="Q" placeholder="" value="92">
+      <label for="m">Потужність ділянки припливу водоносного горизонту</label>
+      <input type="text" id="m" placeholder="" value="12">
     </div>
     <div class="input">
-      <label for="n">Активна поростість</label>
-      <input type="text" id="n" placeholder="" value="0.28">
+      <label for="n">Поростість</label>
+      <input type="text" id="n" placeholder="" value="0.4">
     </div>
     <div class="input">
-      <label for="С0">Генералізація прісних вод</label>
+      <label for="С0">Мінералізація підземних вод</label>
       <input type="text" id="C0" placeholder="" value="0.3">
     </div>
     <div class="input">
-      <label for="Ccer">Мінералізація розчинів у воді</label>
-      <input type="text" id="Ccer" placeholder="" value="10.3">
-    </div>
-    <div class="input">
-      <label for="ne">Ефективна поростість</label>
-      <input type="text" id="ne" placeholder="" value="1">
+      <label for="Cr">Мінералізація річкових вод</label>
+      <input type="text" id="Cr" placeholder="" value="6.3">
     </div>
 
     <h2>Джерело 1</h2>
     <div class="input">
-      <label for="x11">X1</label>
-      <input type="text" id="x11" placeholder="" value="150">
+      <label for="d1">Відстань до свердловини</label>
+      <input type="text" id="d1" placeholder="" value="100">
     </div>
     <div class="input">
-      <label for="y11">Y1</label>
-      <input type="text" id="y11" placeholder="" value="130">
-    </div>
-    <div class="input">
-      <label for="y21">Y2</label>
-      <input type="text" id="y21" placeholder="" value="170">
+      <label for="Q1">Дебіт свердловини</label>
+      <input type="text" id="Q1" placeholder="" value="100">
     </div>
 
     <h2>Джерело 2</h2>
     <div class="input">
-      <label for="x12">X1</label>
-      <input type="text" id="x12" placeholder="" value="150">
+      <label for="d2">Відстань до свердловини</label>
+      <input type="text" id="d2" placeholder="" value="90">
     </div>
     <div class="input">
-      <label for="y12">Y1</label>
-      <input type="text" id="y12" placeholder="" value="-20">
-    </div>
-    <div class="input">
-      <label for="y22">Y2</label>
-      <input type="text" id="y22" placeholder="" value="20">
+      <label for="Q2">Дебіт свердловини</label>
+      <input type="text" id="Q2" placeholder="" value="150">
     </div>
 
     <input type="submit" value="Розрахувати" id="submit">
